@@ -1,0 +1,74 @@
+{
+  "agent_name": "Traffic Intelligence Agent",
+  "agent_id": "699f3276f13aaac966413d90",
+  "description": "Analyzes real-time traffic conditions, predicts signal wait times at intersections, provides smart route recommendations based on current signal status and traffic density, and answers commuter questions about road conditions",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "analysis_type": "string",
+    "summary": "string",
+    "route_recommendations": [
+      {
+        "route_name": "string",
+        "total_time_minutes": "number",
+        "distance_km": "number",
+        "signal_count": "number",
+        "estimated_signal_wait_minutes": "number",
+        "traffic_density": "string",
+        "is_recommended": "boolean",
+        "key_intersections": [
+          "string"
+        ],
+        "notes": "string"
+      }
+    ],
+    "signal_data": [
+      {
+        "intersection_name": "string",
+        "current_phase": "string",
+        "wait_time_seconds": "number",
+        "density_level": "string",
+        "notes": "string"
+      }
+    ],
+    "traffic_insights": [
+      "string"
+    ],
+    "congestion_level": "string",
+    "best_departure_time": "string"
+  },
+  "example_response": {
+    "analysis_type": "Type of analysis: route_analysis, signal_info, traffic_query, general",
+    "summary": "Brief summary of the traffic analysis or answer",
+    "route_recommendations": [
+      {
+        "route_name": "sample string",
+        "total_time_minutes": 0,
+        "distance_km": 0,
+        "signal_count": 0,
+        "estimated_signal_wait_minutes": 0,
+        "traffic_density": "sample string",
+        "is_recommended": false,
+        "key_intersections": [
+          "sample string"
+        ],
+        "notes": "sample string"
+      }
+    ],
+    "signal_data": [
+      {
+        "intersection_name": "sample string",
+        "current_phase": "sample string",
+        "wait_time_seconds": 0,
+        "density_level": "sample string",
+        "notes": "sample string"
+      }
+    ],
+    "traffic_insights": [
+      "sample string"
+    ],
+    "congestion_level": "Overall congestion level: Low, Moderate, High, Very High",
+    "best_departure_time": "Recommended departure time if applicable"
+  }
+}

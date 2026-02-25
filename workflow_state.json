@@ -1,0 +1,11 @@
+{
+  "agents": {
+    "traffic_intelligence_agent": {
+      "agent_id": "699f3276f13aaac966413d90",
+      "name": "Traffic Intelligence Agent",
+      "provider": "perplexity",
+      "model": "sonar-pro",
+      "type": "single"
+    }
+  }
+}

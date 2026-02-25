@@ -1,0 +1,81 @@
+{
+  "agent_name": "Traffic Intelligence Agent",
+  "agent_id": "699f3276f13aaac966413d90",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "TrafficIntelligenceResponse",
+      "strict": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "analysis_type": {
+            "type": "string",
+            "description": "Type of analysis: route_analysis, signal_info, traffic_query, general"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Brief summary of the traffic analysis or answer"
+          },
+          "route_recommendations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "route_name": { "type": "string" },
+                "total_time_minutes": { "type": "number" },
+                "distance_km": { "type": "number" },
+                "signal_count": { "type": "number" },
+                "estimated_signal_wait_minutes": { "type": "number" },
+                "traffic_density": { "type": "string" },
+                "is_recommended": { "type": "boolean" },
+                "key_intersections": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "notes": { "type": "string" }
+              },
+              "required": ["route_name", "total_time_minutes", "distance_km", "signal_count", "estimated_signal_wait_minutes", "traffic_density", "is_recommended", "key_intersections", "notes"],
+              "additionalProperties": false
+            },
+            "description": "Route options with details"
+          },
+          "signal_data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "intersection_name": { "type": "string" },
+                "current_phase": { "type": "string" },
+                "wait_time_seconds": { "type": "number" },
+                "density_level": { "type": "string" },
+                "notes": { "type": "string" }
+              },
+              "required": ["intersection_name", "current_phase", "wait_time_seconds", "density_level", "notes"],
+              "additionalProperties": false
+            },
+            "description": "Signal data for intersections"
+          },
+          "traffic_insights": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Additional traffic insights and tips"
+          },
+          "congestion_level": {
+            "type": "string",
+            "description": "Overall congestion level: Low, Moderate, High, Very High"
+          },
+          "best_departure_time": {
+            "type": "string",
+            "description": "Recommended departure time if applicable"
+          }
+        },
+        "required": ["analysis_type", "summary", "route_recommendations", "signal_data", "traffic_insights", "congestion_level", "best_departure_time"],
+        "additionalProperties": false
+      }
+    }
+  }
+}
