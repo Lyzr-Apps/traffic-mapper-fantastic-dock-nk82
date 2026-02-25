@@ -27,7 +27,6 @@ import {
   FiChevronUp,
   FiMapPin,
   FiTruck,
-  FiGrid,
   FiArrowRight,
   FiCheck,
   FiInfo,
@@ -72,8 +71,8 @@ interface ChatMessage {
 interface Intersection {
   id: number
   name: string
-  x: number
-  y: number
+  lat: number
+  lng: number
   status: 'green' | 'red' | 'yellow'
   countdown: number
   density: number
@@ -86,79 +85,86 @@ interface SavedRoute {
   destination: string
 }
 
-// ---------- Intersection Data ----------
+// ---------- Bangalore Intersection Data ----------
 const INITIAL_INTERSECTIONS: Intersection[] = [
-  { id: 1, name: 'Main St & 1st Ave', x: 20, y: 25, status: 'green', countdown: 12, density: 2 },
-  { id: 2, name: 'Broadway & 5th St', x: 35, y: 40, status: 'red', countdown: 28, density: 4 },
-  { id: 3, name: 'Market St & Park Ave', x: 50, y: 15, status: 'green', countdown: 8, density: 1 },
-  { id: 4, name: 'Oak Dr & Lake Blvd', x: 65, y: 55, status: 'yellow', countdown: 3, density: 3 },
-  { id: 5, name: 'Pine St & River Rd', x: 25, y: 60, status: 'red', countdown: 35, density: 5 },
-  { id: 6, name: 'Elm St & College Ave', x: 45, y: 45, status: 'green', countdown: 18, density: 2 },
-  { id: 7, name: 'Cedar Ln & Hill St', x: 70, y: 30, status: 'green', countdown: 6, density: 1 },
-  { id: 8, name: 'Maple Ave & Center St', x: 15, y: 45, status: 'red', countdown: 22, density: 4 },
-  { id: 9, name: 'Walnut St & 3rd Ave', x: 55, y: 70, status: 'yellow', countdown: 2, density: 3 },
-  { id: 10, name: 'Birch Rd & Summit Dr', x: 80, y: 20, status: 'green', countdown: 15, density: 1 },
-  { id: 11, name: 'Spruce Way & Valley Rd', x: 40, y: 75, status: 'red', countdown: 30, density: 5 },
-  { id: 12, name: 'Ash St & Garden Ln', x: 75, y: 65, status: 'green', countdown: 10, density: 2 },
+  { id: 1, name: 'MG Road & Brigade Road', lat: 12.9758, lng: 77.6066, status: 'green', countdown: 15, density: 4 },
+  { id: 2, name: 'Silk Board Junction', lat: 12.9173, lng: 77.6229, status: 'red', countdown: 45, density: 5 },
+  { id: 3, name: 'Marathahalli Bridge', lat: 12.9562, lng: 77.7013, status: 'red', countdown: 32, density: 5 },
+  { id: 4, name: 'Hebbal Flyover', lat: 13.0358, lng: 77.5970, status: 'green', countdown: 20, density: 3 },
+  { id: 5, name: 'KR Puram Junction', lat: 12.9988, lng: 77.6965, status: 'yellow', countdown: 4, density: 4 },
+  { id: 6, name: 'Koramangala BDA Complex', lat: 12.9352, lng: 77.6245, status: 'green', countdown: 12, density: 2 },
+  { id: 7, name: 'Indiranagar 100ft Road', lat: 12.9784, lng: 77.6408, status: 'green', countdown: 18, density: 2 },
+  { id: 8, name: 'Jayanagar 4th Block', lat: 12.9266, lng: 77.5835, status: 'red', countdown: 28, density: 3 },
+  { id: 9, name: 'Banashankari Circle', lat: 12.9250, lng: 77.5462, status: 'green', countdown: 10, density: 2 },
+  { id: 10, name: 'Yeshwanthpur Circle', lat: 13.0223, lng: 77.5510, status: 'red', countdown: 35, density: 4 },
+  { id: 11, name: 'Majestic Bus Station', lat: 12.9767, lng: 77.5713, status: 'yellow', countdown: 3, density: 5 },
+  { id: 12, name: 'Electronic City Phase 1', lat: 12.8451, lng: 77.6602, status: 'green', countdown: 22, density: 3 },
+  { id: 13, name: 'Whitefield Main Road', lat: 12.9698, lng: 77.7500, status: 'red', countdown: 40, density: 4 },
+  { id: 14, name: 'JP Nagar 6th Phase', lat: 12.8984, lng: 77.5855, status: 'green', countdown: 8, density: 1 },
+  { id: 15, name: 'Yelahanka Junction', lat: 13.1005, lng: 77.5963, status: 'green', countdown: 14, density: 2 },
+  { id: 16, name: 'HSR Layout Sector 1', lat: 12.9116, lng: 77.6389, status: 'yellow', countdown: 5, density: 3 },
+  { id: 17, name: 'BTM Layout 2nd Stage', lat: 12.9165, lng: 77.6101, status: 'red', countdown: 25, density: 4 },
+  { id: 18, name: 'Rajajinagar Junction', lat: 12.9907, lng: 77.5556, status: 'green', countdown: 16, density: 2 },
 ]
 
 // ---------- Sample Data ----------
 const SAMPLE_MESSAGES: ChatMessage[] = [
   {
     role: 'user',
-    content: 'Analyze the best route from Main St to Oak Dr',
+    content: 'Analyze the best route from Koramangala to Hebbal Flyover',
     data: null,
   },
   {
     role: 'agent',
-    content: 'Based on current traffic conditions, I recommend taking the Market St corridor. Here are your route options:',
+    content: 'Based on current Bangalore traffic conditions, I recommend taking the Indiranagar corridor. Here are your route options:',
     data: {
       analysis_type: 'route_analysis',
-      summary: 'Based on current traffic conditions, I recommend taking the Market St corridor via Park Ave. Traffic density is low along this route with favorable signal timing. Avoid Broadway & 5th St due to heavy congestion.',
+      summary: 'Based on current Bangalore traffic conditions, I recommend taking the Indiranagar corridor via 100ft Road. Traffic density is moderate along this route with favorable signal timing. Avoid Silk Board Junction due to extreme congestion.',
       route_recommendations: [
         {
-          route_name: 'Market St Express',
-          total_time_minutes: 14,
-          distance_km: 5.2,
-          signal_count: 4,
-          estimated_signal_wait_minutes: 3,
-          traffic_density: 'Low',
-          is_recommended: true,
-          key_intersections: ['Market St & Park Ave', 'Cedar Ln & Hill St'],
-          notes: 'Fastest route with minimal signal delays',
-        },
-        {
-          route_name: 'Broadway Central',
-          total_time_minutes: 22,
-          distance_km: 4.8,
-          signal_count: 6,
-          estimated_signal_wait_minutes: 8,
-          traffic_density: 'High',
-          is_recommended: false,
-          key_intersections: ['Broadway & 5th St', 'Elm St & College Ave'],
-          notes: 'Heavy congestion near Broadway intersection',
-        },
-        {
-          route_name: 'Pine River Route',
-          total_time_minutes: 18,
-          distance_km: 6.1,
-          signal_count: 3,
+          route_name: 'Indiranagar Express',
+          total_time_minutes: 28,
+          distance_km: 14.5,
+          signal_count: 5,
           estimated_signal_wait_minutes: 4,
           traffic_density: 'Moderate',
+          is_recommended: true,
+          key_intersections: ['Koramangala BDA Complex', 'Indiranagar 100ft Road', 'Hebbal Flyover'],
+          notes: 'Best route via Indiranagar - avoids Silk Board congestion',
+        },
+        {
+          route_name: 'Outer Ring Road',
+          total_time_minutes: 42,
+          distance_km: 18.2,
+          signal_count: 8,
+          estimated_signal_wait_minutes: 12,
+          traffic_density: 'High',
           is_recommended: false,
-          key_intersections: ['Pine St & River Rd', 'Walnut St & 3rd Ave'],
-          notes: 'Longer distance but fewer signals',
+          key_intersections: ['Silk Board Junction', 'Marathahalli Bridge', 'KR Puram Junction'],
+          notes: 'Heavy congestion near Silk Board - expect delays',
+        },
+        {
+          route_name: 'MG Road Central',
+          total_time_minutes: 35,
+          distance_km: 15.8,
+          signal_count: 6,
+          estimated_signal_wait_minutes: 7,
+          traffic_density: 'Moderate',
+          is_recommended: false,
+          key_intersections: ['MG Road & Brigade Road', 'Majestic Bus Station', 'Yeshwanthpur Circle'],
+          notes: 'Moderate traffic through city center',
         },
       ],
       signal_data: [
-        { intersection_name: 'Market St & Park Ave', current_phase: 'green', wait_time_seconds: 8, density_level: 'Low', notes: 'Favorable timing' },
-        { intersection_name: 'Broadway & 5th St', current_phase: 'red', wait_time_seconds: 28, density_level: 'High', notes: 'Avoid if possible' },
+        { intersection_name: 'Koramangala BDA Complex', current_phase: 'green', wait_time_seconds: 12, density_level: 'Low', notes: 'Favorable timing' },
+        { intersection_name: 'Silk Board Junction', current_phase: 'red', wait_time_seconds: 45, density_level: 'Very High', notes: 'Avoid if possible - peak hour gridlock' },
+        { intersection_name: 'Indiranagar 100ft Road', current_phase: 'green', wait_time_seconds: 18, density_level: 'Low', notes: 'Smooth flow' },
       ],
       traffic_insights: [
-        'Market St corridor has 60% less traffic than Broadway during this hour',
-        'Signal synchronization active on Market St - green wave pattern',
-        'Construction on Elm St may cause minor delays after 5 PM',
-        'Pine River route has school zone speed limit until 4 PM',
+        'Silk Board Junction is experiencing peak hour congestion - avoid until after 8 PM',
+        'Indiranagar 100ft Road has green wave synchronization active',
+        'Metro construction near MG Road may cause minor delays',
+        'Hebbal Flyover approach from Yeshwanthpur has less traffic than Bellary Road',
       ],
       congestion_level: 'Moderate',
       best_departure_time: 'Leave within the next 10 minutes for optimal conditions',
@@ -167,9 +173,9 @@ const SAMPLE_MESSAGES: ChatMessage[] = [
 ]
 
 const SAMPLE_ROUTES: SavedRoute[] = [
-  { id: '1', name: 'Morning Commute', origin: 'Home - Main St', destination: 'Office - Oak Dr' },
-  { id: '2', name: 'Grocery Run', origin: 'Home - Main St', destination: 'Market - Elm St' },
-  { id: '3', name: 'Weekend Park', origin: 'Home - Main St', destination: 'Riverside Park' },
+  { id: '1', name: 'Morning Commute', origin: 'Koramangala', destination: 'Manyata Tech Park' },
+  { id: '2', name: 'Weekend Trip', origin: 'Indiranagar', destination: 'Electronic City' },
+  { id: '3', name: 'Airport Run', origin: 'MG Road', destination: 'Kempegowda Airport' },
 ]
 
 const SAMPLE_ROUTE_RESULTS = SAMPLE_MESSAGES[1]?.data?.route_recommendations ?? []
@@ -238,10 +244,53 @@ function cycleSignal(status: 'green' | 'red' | 'yellow'): 'green' | 'red' | 'yel
   return 'green'
 }
 
-function getMaxCountdown(status: 'green' | 'red' | 'yellow'): number {
+function getMaxCountdownForStatus(status: 'green' | 'red' | 'yellow'): number {
   if (status === 'green') return 15 + Math.floor(Math.random() * 20)
   if (status === 'red') return 20 + Math.floor(Math.random() * 25)
   return 3 + Math.floor(Math.random() * 3)
+}
+
+// ---------- Leaflet Marker Icon Creator ----------
+function createSignalIcon(L: any, status: string, countdown: number): any {
+  const color = status === 'green' ? 'hsl(160,70%,45%)' : status === 'red' ? 'hsl(0,75%,55%)' : 'hsl(35,85%,55%)'
+  return L.divIcon({
+    html: '<div style="position:relative;cursor:pointer;"><div style="width:22px;height:22px;border-radius:50%;background:' + color + ';border:2px solid hsl(220,25%,7%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px ' + color + '80;"><span style="color:white;font-size:8px;font-weight:700;font-family:monospace;">' + countdown + 's</span></div></div>',
+    className: '',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  })
+}
+
+// ---------- Leaflet Popup Content Creator ----------
+function createPopupContent(inter: Intersection): string {
+  const color = getSignalColor(inter.status)
+  const densityColor = inter.density >= 4 ? 'hsl(0,75%,55%)' : inter.density >= 3 ? 'hsl(35,85%,55%)' : 'hsl(160,70%,45%)'
+  const densityBars = Array.from({ length: 5 }, (_, i) =>
+    '<div style="width:16px;height:6px;border-radius:1px;background:' + (i < inter.density ? densityColor : 'hsl(220,15%,20%)') + ';"></div>'
+  ).join('')
+
+  return '<div style="background:hsl(220,22%,10%);color:hsl(220,15%,85%);padding:12px;border-radius:2px;min-width:200px;font-family:sans-serif;">' +
+    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">' +
+    '<div style="width:10px;height:10px;border-radius:50%;background:' + color + ';"></div>' +
+    '<strong style="font-size:12px;">' + inter.name + '</strong>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+    '<span style="font-size:10px;color:hsl(220,12%,55%);text-transform:uppercase;">Status</span>' +
+    '<span style="font-size:10px;color:' + color + ';font-weight:600;">' + inter.status.toUpperCase() + '</span>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+    '<span style="font-size:10px;color:hsl(220,12%,55%);text-transform:uppercase;">Countdown</span>' +
+    '<span style="font-size:13px;font-weight:700;color:' + color + ';">' + inter.countdown + 's</span>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+    '<span style="font-size:10px;color:hsl(220,12%,55%);text-transform:uppercase;">Avg Wait</span>' +
+    '<span style="font-size:10px;">' + (inter.status === 'red' ? '~35s' : inter.status === 'yellow' ? '~5s' : '~0s') + '</span>' +
+    '</div>' +
+    '<div>' +
+    '<span style="font-size:10px;color:hsl(220,12%,55%);text-transform:uppercase;">Density</span>' +
+    '<div style="display:flex;gap:2px;margin-top:4px;">' + densityBars + '</div>' +
+    '</div>' +
+    '</div>'
 }
 
 // ---------- ErrorBoundary ----------
@@ -275,108 +324,6 @@ class ErrorBoundary extends React.Component<
     }
     return this.props.children
   }
-}
-
-// ============================================================
-// INLINE COMPONENTS (defined above default export)
-// ============================================================
-
-// ---------- Signal Marker on Map ----------
-function SignalMarker({
-  intersection,
-  isSelected,
-  onClick,
-}: {
-  intersection: Intersection
-  isSelected: boolean
-  onClick: () => void
-}) {
-  const color = getSignalColor(intersection.status)
-  return (
-    <button
-      onClick={onClick}
-      className="absolute flex flex-col items-center group"
-      style={{
-        left: `${intersection.x}%`,
-        top: `${intersection.y}%`,
-        transform: 'translate(-50%, -50%)',
-        zIndex: isSelected ? 30 : 10,
-      }}
-    >
-      <div
-        className={cn(
-          'w-5 h-5 rounded-full border-2 border-background flex items-center justify-center transition-transform duration-200',
-          'group-hover:scale-125',
-          isSelected && 'scale-125 ring-2 ring-primary ring-offset-1 ring-offset-background'
-        )}
-        style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }}
-      >
-        <span className="text-[7px] font-bold text-white leading-none">{intersection.countdown}s</span>
-      </div>
-    </button>
-  )
-}
-
-// ---------- Signal Detail Popup ----------
-function SignalPopup({
-  intersection,
-  onClose,
-}: {
-  intersection: Intersection
-  onClose: () => void
-}) {
-  const color = getSignalColor(intersection.status)
-  const densityIcons = Array.from({ length: 5 }, (_, i) => i)
-  return (
-    <div
-      className="absolute z-40 w-56"
-      style={{
-        left: `${intersection.x}%`,
-        top: `${intersection.y}%`,
-        transform: intersection.x > 60 ? 'translate(-100%, -110%)' : 'translate(10%, -110%)',
-      }}
-    >
-      <Card className="border border-border bg-card shadow-none">
-        <CardHeader className="p-2.5 pb-1.5 flex flex-row items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <CardTitle className="text-xs font-semibold leading-tight">{intersection.name}</CardTitle>
-          </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-            <FiX size={12} />
-          </button>
-        </CardHeader>
-        <CardContent className="p-2.5 pt-0 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Status</span>
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border" style={{ borderColor: color, color: color }}>
-              {intersection.status.toUpperCase()}
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Countdown</span>
-            <span className="text-sm font-bold tabular-nums" style={{ color }}>{intersection.countdown}s</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg Wait</span>
-            <span className="text-xs text-foreground">{intersection.status === 'red' ? '~30s' : intersection.status === 'yellow' ? '~5s' : '~0s'}</span>
-          </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Vehicle Density</span>
-            <div className="flex gap-1 mt-1">
-              {densityIcons.map((idx) => (
-                <FiTruck
-                  key={idx}
-                  size={12}
-                  className={idx < intersection.density ? 'text-foreground' : 'text-muted-foreground/30'}
-                />
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
 }
 
 // ---------- Route Card in Bottom Drawer ----------
@@ -546,7 +493,6 @@ export default function Page() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [intersections, setIntersections] = useState<Intersection[]>(INITIAL_INTERSECTIONS)
-  const [selectedMarker, setSelectedMarker] = useState<number | null>(null)
   const [routeResults, setRouteResults] = useState<TrafficIntelligenceResponse['route_recommendations']>([])
   const [showRouteDrawer, setShowRouteDrawer] = useState(false)
   const [drawerExpanded, setDrawerExpanded] = useState(false)
@@ -556,11 +502,24 @@ export default function Page() {
   const [routeAnalyzing, setRouteAnalyzing] = useState(false)
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([])
   const [showLayers, setShowLayers] = useState(false)
-  const [layerGrid, setLayerGrid] = useState(true)
+  const [layerSignals, setLayerSignals] = useState(true)
   const [layerDensity, setLayerDensity] = useState(true)
+  const [leafletLoaded, setLeafletLoaded] = useState(false)
 
   const chatScrollRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<HTMLInputElement>(null)
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<any>(null)
+  const markersRef = useRef<Record<number, any>>({})
+  const densityCirclesRef = useRef<any[]>([])
+  const routePolylineRef = useRef<any>(null)
+  const userMarkerRef = useRef<any>(null)
+  const intersectionsRef = useRef<Intersection[]>(INITIAL_INTERSECTIONS)
+
+  // Keep intersectionsRef in sync
+  useEffect(() => {
+    intersectionsRef.current = intersections
+  }, [intersections])
 
   // ----- Sample Data Toggle -----
   const displayMessages = sampleData && messages.length === 0 ? SAMPLE_MESSAGES : messages
@@ -568,14 +527,111 @@ export default function Page() {
   const displayShowDrawer = sampleData && routeResults.length === 0 ? true : showRouteDrawer
   const displaySavedRoutes = sampleData && savedRoutes.length === 0 ? SAMPLE_ROUTES : savedRoutes
 
-  // ----- Signal Countdown Timer -----
+  // ----- Load Leaflet via CDN -----
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (document.getElementById('leaflet-css')) {
+      if ((window as any).L) {
+        setLeafletLoaded(true)
+      }
+      return
+    }
+
+    const link = document.createElement('link')
+    link.id = 'leaflet-css'
+    link.rel = 'stylesheet'
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+    document.head.appendChild(link)
+
+    const script = document.createElement('script')
+    script.id = 'leaflet-js'
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    script.onload = () => {
+      setLeafletLoaded(true)
+    }
+    document.body.appendChild(script)
+  }, [])
+
+  // ----- Initialize Leaflet Map -----
+  useEffect(() => {
+    if (!leafletLoaded || !mapContainerRef.current || mapInstanceRef.current) return
+
+    const L = (window as any).L
+    if (!L) return
+
+    const map = L.map(mapContainerRef.current, {
+      center: [12.9716, 77.5946],
+      zoom: 13,
+      zoomControl: false,
+    })
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      maxZoom: 19,
+    }).addTo(map)
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(map)
+
+    mapInstanceRef.current = map
+
+    // Try geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          map.setView([pos.coords.latitude, pos.coords.longitude], 14)
+          const userIcon = L.divIcon({
+            html: '<div style="width:14px;height:14px;background:hsl(220,80%,55%);border:3px solid white;border-radius:50%;box-shadow:0 0 10px rgba(59,130,246,0.5);"></div>',
+            className: '',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+          })
+          userMarkerRef.current = L.marker([pos.coords.latitude, pos.coords.longitude], { icon: userIcon }).addTo(map)
+            .bindPopup('<div style="background:hsl(220,22%,10%);color:hsl(220,15%,85%);padding:8px;font-size:11px;font-family:sans-serif;">Your location</div>')
+        },
+        () => {
+          // Geolocation denied, stay on Bangalore center
+        },
+        { enableHighAccuracy: true }
+      )
+    }
+
+    // Add initial signal markers
+    const currentIntersections = intersectionsRef.current
+    currentIntersections.forEach((inter) => {
+      const icon = createSignalIcon(L, inter.status, inter.countdown)
+      const marker = L.marker([inter.lat, inter.lng], { icon }).addTo(map)
+      marker.bindPopup(createPopupContent(inter), { className: 'traffic-popup', maxWidth: 250 })
+      markersRef.current[inter.id] = marker
+    })
+
+    // Add density circles for high-density intersections
+    currentIntersections.filter((i) => i.density >= 4).forEach((inter) => {
+      const circle = L.circle([inter.lat, inter.lng], {
+        radius: 300,
+        color: inter.density >= 5 ? 'hsla(0, 75%, 55%, 0.15)' : 'hsla(35, 85%, 55%, 0.1)',
+        fillColor: inter.density >= 5 ? 'hsla(0, 75%, 55%, 0.08)' : 'hsla(35, 85%, 55%, 0.05)',
+        fillOpacity: 1,
+        weight: 1,
+      }).addTo(map)
+      densityCirclesRef.current.push(circle)
+    })
+
+    return () => {
+      map.remove()
+      mapInstanceRef.current = null
+      markersRef.current = {}
+      densityCirclesRef.current = []
+    }
+  }, [leafletLoaded])
+
+  // ----- Signal Countdown Timer + Update Leaflet Markers -----
   useEffect(() => {
     const interval = setInterval(() => {
       setIntersections((prev) =>
         prev.map((inter) => {
           if (inter.countdown <= 1) {
             const newStatus = cycleSignal(inter.status)
-            return { ...inter, status: newStatus, countdown: getMaxCountdown(newStatus) }
+            return { ...inter, status: newStatus, countdown: getMaxCountdownForStatus(newStatus) }
           }
           return { ...inter, countdown: inter.countdown - 1 }
         })
@@ -584,12 +640,124 @@ export default function Page() {
     return () => clearInterval(interval)
   }, [])
 
+  // ----- Update Leaflet marker icons when intersections change -----
+  useEffect(() => {
+    const L = (window as any).L
+    if (!L || !mapInstanceRef.current) return
+
+    intersections.forEach((inter) => {
+      const marker = markersRef.current[inter.id]
+      if (marker) {
+        const newIcon = createSignalIcon(L, inter.status, inter.countdown)
+        marker.setIcon(newIcon)
+        marker.setPopupContent(createPopupContent(inter))
+      }
+    })
+  }, [intersections])
+
+  // ----- Toggle signal marker visibility -----
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    Object.values(markersRef.current).forEach((marker: any) => {
+      if (layerSignals) {
+        if (!map.hasLayer(marker)) map.addLayer(marker)
+      } else {
+        if (map.hasLayer(marker)) map.removeLayer(marker)
+      }
+    })
+  }, [layerSignals])
+
+  // ----- Toggle density circle visibility -----
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    densityCirclesRef.current.forEach((circle: any) => {
+      if (layerDensity) {
+        if (!map.hasLayer(circle)) map.addLayer(circle)
+      } else {
+        if (map.hasLayer(circle)) map.removeLayer(circle)
+      }
+    })
+  }, [layerDensity])
+
+  // ----- Draw route polyline when route results change -----
+  useEffect(() => {
+    const L = (window as any).L
+    const map = mapInstanceRef.current
+    if (!L || !map) return
+
+    // Remove old polyline
+    if (routePolylineRef.current) {
+      map.removeLayer(routePolylineRef.current)
+      routePolylineRef.current = null
+    }
+
+    const activeRoute = displayRouteResults[activeRouteIdx]
+    if (!displayShowDrawer || !activeRoute || !Array.isArray(activeRoute?.key_intersections)) return
+
+    const points: [number, number][] = []
+    activeRoute.key_intersections.forEach((name: string) => {
+      const found = intersections.find((i) => i.name === name)
+      if (found) {
+        points.push([found.lat, found.lng])
+      }
+    })
+
+    if (points.length >= 2) {
+      routePolylineRef.current = L.polyline(points, {
+        color: 'hsl(220,80%,55%)',
+        weight: 4,
+        dashArray: '10, 6',
+        opacity: 0.8,
+      }).addTo(map)
+
+      // Fit map to show the route
+      const bounds = L.latLngBounds(points)
+      map.fitBounds(bounds, { padding: [60, 60] })
+    }
+  }, [displayRouteResults, activeRouteIdx, displayShowDrawer, intersections])
+
   // ----- Auto-scroll chat -----
   useEffect(() => {
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight
     }
   }, [displayMessages, isLoading])
+
+  // ----- My Location button handler -----
+  const handleMyLocation = useCallback(() => {
+    const map = mapInstanceRef.current
+    const L = (window as any).L
+    if (!map || !L) return
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          map.flyTo([pos.coords.latitude, pos.coords.longitude], 15)
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setLatLng([pos.coords.latitude, pos.coords.longitude])
+          } else {
+            const userIcon = L.divIcon({
+              html: '<div style="width:14px;height:14px;background:hsl(220,80%,55%);border:3px solid white;border-radius:50%;box-shadow:0 0 10px rgba(59,130,246,0.5);"></div>',
+              className: '',
+              iconSize: [14, 14],
+              iconAnchor: [7, 7],
+            })
+            userMarkerRef.current = L.marker([pos.coords.latitude, pos.coords.longitude], { icon: userIcon }).addTo(map)
+              .bindPopup('<div style="background:hsl(220,22%,10%);color:hsl(220,15%,85%);padding:8px;font-size:11px;font-family:sans-serif;">Your location</div>')
+          }
+        },
+        () => {
+          // Geolocation denied - fly to Bangalore center
+          map.flyTo([12.9716, 77.5946], 14)
+        },
+        { enableHighAccuracy: true }
+      )
+    }
+  }, [])
 
   // ----- Agent Call -----
   const handleSendMessage = useCallback(async (message: string) => {
@@ -618,7 +786,8 @@ export default function Page() {
         if (parsed.route_recommendations.length > 0) {
           setRouteResults(parsed.route_recommendations)
           setShowRouteDrawer(true)
-          setActiveRouteIdx(parsed.route_recommendations.findIndex((r) => r.is_recommended) ?? 0)
+          const bestIdx = parsed.route_recommendations.findIndex((r) => r.is_recommended)
+          setActiveRouteIdx(bestIdx >= 0 ? bestIdx : 0)
         }
       } else {
         setMessages((prev) => [
@@ -642,7 +811,7 @@ export default function Page() {
     if (!origin.trim() || !destination.trim()) return
     setRouteAnalyzing(true)
     setChatOpen(true)
-    const message = `Analyze the best route from ${origin} to ${destination}. Provide route recommendations with signal timing predictions, traffic density at key intersections, and estimated travel times.`
+    const message = `Analyze the best route from ${origin} to ${destination} in Bangalore. Provide route recommendations with signal timing predictions, traffic density at key intersections, and estimated travel times. Use these Bangalore intersections as reference points: MG Road & Brigade Road, Silk Board Junction, Marathahalli Bridge, Hebbal Flyover, KR Puram Junction, Koramangala BDA Complex, Indiranagar 100ft Road, Jayanagar 4th Block, Banashankari Circle, Yeshwanthpur Circle, Majestic Bus Station, Electronic City Phase 1, Whitefield Main Road, JP Nagar 6th Phase, Yelahanka Junction, HSR Layout Sector 1, BTM Layout 2nd Stage, Rajajinagar Junction.`
     await handleSendMessage(message)
   }, [origin, destination, handleSendMessage])
 
@@ -687,16 +856,15 @@ export default function Page() {
     setDestination(o)
   }, [origin, destination])
 
-  // ----- Route line SVG path from intersection coords -----
+  // ----- Route info for timeline -----
   const activeRoute = displayRouteResults[activeRouteIdx]
-  const routePathPoints = activeRoute && Array.isArray(activeRoute.key_intersections)
-    ? activeRoute.key_intersections
-        .map((name) => intersections.find((i) => i.name === name))
-        .filter(Boolean)
-        .map((i) => i as Intersection)
-    : []
 
-  const QUICK_QUERIES = ['Best route home?', 'Congestion ahead?', 'Signal timing?', 'Traffic density?']
+  const QUICK_QUERIES = [
+    'Best route from Koramangala to Hebbal?',
+    'Silk Board Junction congestion?',
+    'Signal timing on MG Road?',
+    'Traffic density near Whitefield?',
+  ]
 
   return (
     <ErrorBoundary>
@@ -718,7 +886,7 @@ export default function Page() {
               <Input
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
-                placeholder="Enter origin..."
+                placeholder="Enter origin (e.g. Koramangala)..."
                 className="h-7 text-xs pl-7 bg-secondary border-border rounded-sm"
               />
             </div>
@@ -734,7 +902,7 @@ export default function Page() {
               <Input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                placeholder="Enter destination..."
+                placeholder="Enter destination (e.g. Hebbal)..."
                 className="h-7 text-xs pl-7 bg-secondary border-border rounded-sm"
               />
             </div>
@@ -843,77 +1011,23 @@ export default function Page() {
             </ScrollArea>
           </div>
 
-          {/* ---------- MAP AREA ---------- */}
+          {/* ---------- MAP AREA (Real Leaflet Map) ---------- */}
           <div className="flex-1 relative overflow-hidden bg-background">
-            {/* Grid Lines (Streets) */}
-            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              {/* Horizontal streets */}
-              {layerGrid && [15, 25, 40, 45, 55, 60, 70, 75].map((y) => (
-                <line
-                  key={`h-${y}`}
-                  x1="0%" y1={`${y}%`} x2="100%" y2={`${y}%`}
-                  stroke="hsl(220, 15%, 14%)" strokeWidth="1"
-                />
-              ))}
-              {/* Vertical streets */}
-              {layerGrid && [15, 20, 25, 35, 40, 45, 50, 55, 65, 70, 75, 80].map((x) => (
-                <line
-                  key={`v-${x}`}
-                  x1={`${x}%`} y1="0%" x2={`${x}%`} y2="100%"
-                  stroke="hsl(220, 15%, 14%)" strokeWidth="1"
-                />
-              ))}
-              {/* Major roads - slightly brighter */}
-              <line x1="0%" y1="40%" x2="100%" y2="40%" stroke="hsl(220, 15%, 17%)" strokeWidth="2" />
-              <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="hsl(220, 15%, 17%)" strokeWidth="2" />
-              <line x1="0%" y1="25%" x2="100%" y2="25%" stroke="hsl(220, 15%, 16%)" strokeWidth="1.5" />
-              <line x1="35%" y1="0%" x2="35%" y2="100%" stroke="hsl(220, 15%, 16%)" strokeWidth="1.5" />
+            {/* Leaflet Map Container */}
+            <div
+              id="map-container"
+              ref={mapContainerRef}
+              style={{ width: '100%', height: '100%', zIndex: 0 }}
+            />
 
-              {/* Density heat zones */}
-              {layerDensity && intersections.filter((i) => i.density >= 4).map((i) => (
-                <circle
-                  key={`density-${i.id}`}
-                  cx={`${i.x}%`} cy={`${i.y}%`}
-                  r="30"
-                  fill={i.density >= 5 ? 'hsla(0, 75%, 55%, 0.06)' : 'hsla(35, 85%, 55%, 0.05)'}
-                />
-              ))}
-
-              {/* Route line when route analysis active */}
-              {displayShowDrawer && routePathPoints.length >= 2 && (
-                <polyline
-                  points={routePathPoints.map((p) => `${(p.x / 100) * 1000},${(p.y / 100) * 600}`).join(' ')}
-                  fill="none"
-                  stroke="hsl(220, 80%, 55%)"
-                  strokeWidth="3"
-                  strokeDasharray="8 4"
-                  strokeLinecap="round"
-                  opacity="0.8"
-                />
-              )}
-            </svg>
-
-            {/* Block labels on major roads */}
-            <div className="absolute text-[8px] text-muted-foreground/40 font-semibold uppercase tracking-widest" style={{ left: '2%', top: '38%' }}>Main Corridor</div>
-            <div className="absolute text-[8px] text-muted-foreground/40 font-semibold uppercase tracking-widest" style={{ left: '2%', top: '23%' }}>Market District</div>
-            <div className="absolute text-[8px] text-muted-foreground/40 font-semibold uppercase tracking-widest" style={{ left: '48%', top: '3%', transform: 'rotate(90deg)', transformOrigin: 'left' }}>Central Ave</div>
-
-            {/* Signal Markers */}
-            {intersections.map((inter) => (
-              <SignalMarker
-                key={inter.id}
-                intersection={inter}
-                isSelected={selectedMarker === inter.id}
-                onClick={() => setSelectedMarker(selectedMarker === inter.id ? null : inter.id)}
-              />
-            ))}
-
-            {/* Signal Popup */}
-            {selectedMarker !== null && (
-              <SignalPopup
-                intersection={intersections.find((i) => i.id === selectedMarker) ?? intersections[0]}
-                onClose={() => setSelectedMarker(null)}
-              />
+            {/* Loading overlay while Leaflet loads */}
+            {!leafletLoaded && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-muted-foreground">Loading map...</span>
+                </div>
+              </div>
             )}
 
             {/* Route Analyzing Overlay */}
@@ -938,6 +1052,7 @@ export default function Page() {
                 </button>
               )}
               <button
+                onClick={handleMyLocation}
                 className="w-10 h-10 bg-card border border-border rounded-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 title="My Location"
               >
@@ -947,7 +1062,7 @@ export default function Page() {
 
             {/* Layers Panel - Top Right of map */}
             {showLayers && (
-              <div className="absolute top-3 right-3 z-20 w-44">
+              <div className="absolute top-3 right-3 z-20 w-48">
                 <Card className="border border-border bg-card shadow-none">
                   <CardHeader className="p-2.5 pb-1.5">
                     <CardTitle className="text-[10px] uppercase tracking-wide text-muted-foreground">Map Layers</CardTitle>
@@ -955,10 +1070,10 @@ export default function Page() {
                   <CardContent className="p-2.5 pt-0 space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <FiGrid size={10} className="text-muted-foreground" />
-                        <span className="text-[10px]">Street Grid</span>
+                        <FiMapPin size={10} className="text-muted-foreground" />
+                        <span className="text-[10px]">Signal Markers</span>
                       </div>
-                      <Switch checked={layerGrid} onCheckedChange={setLayerGrid} className="scale-[0.6]" />
+                      <Switch checked={layerSignals} onCheckedChange={setLayerSignals} className="scale-[0.6]" />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
@@ -972,8 +1087,8 @@ export default function Page() {
               </div>
             )}
 
-            {/* Signal Legend - Bottom Left of map */}
-            <div className="absolute bottom-4 left-4 z-20 flex items-center gap-3 bg-card/90 border border-border rounded-sm px-3 py-1.5">
+            {/* Signal Legend - Bottom Left of map (offset for zoom control) */}
+            <div className="absolute bottom-4 left-16 z-20 flex items-center gap-3 bg-card/90 border border-border rounded-sm px-3 py-1.5">
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(160, 70%, 45%)' }} />
                 <span className="text-[9px] text-muted-foreground">Green</span>
@@ -1023,7 +1138,7 @@ export default function Page() {
                       </div>
                       <p className="text-xs font-semibold text-foreground mb-1">TrafficPulse AI</p>
                       <p className="text-[10px] text-muted-foreground leading-relaxed mb-4">
-                        Ask about traffic conditions, route analysis, signal timing, or congestion patterns. I have real-time web search.
+                        Ask about Bangalore traffic conditions, route analysis, signal timing at major intersections, or congestion patterns.
                       </p>
                       <div className="w-full space-y-1.5">
                         {QUICK_QUERIES.map((q) => (
@@ -1069,7 +1184,7 @@ export default function Page() {
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit() } }}
-                    placeholder="Ask about traffic..."
+                    placeholder="Ask about Bangalore traffic..."
                     className="h-7 text-xs bg-secondary border-border rounded-sm flex-1"
                     disabled={isLoading}
                   />
@@ -1140,7 +1255,7 @@ export default function Page() {
               <div className="px-4 py-2 border-t border-border">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Signal Timeline</span>
                 <div className="flex items-center gap-1 mt-2 overflow-x-auto">
-                  {Array.isArray(activeRoute.key_intersections) && activeRoute.key_intersections.map((name, idx) => {
+                  {Array.isArray(activeRoute?.key_intersections) && activeRoute.key_intersections.map((name: string, idx: number) => {
                     const inter = intersections.find((i) => i.name === name)
                     const color = inter ? getSignalColor(inter.status) : 'hsl(220, 12%, 55%)'
                     return (
@@ -1149,16 +1264,16 @@ export default function Page() {
                           <div className="w-4 h-4 rounded-full border border-border flex items-center justify-center" style={{ backgroundColor: color }}>
                             <span className="text-[6px] font-bold text-white">{inter?.countdown ?? '?'}</span>
                           </div>
-                          <span className="text-[7px] text-muted-foreground mt-0.5 max-w-[60px] text-center truncate">{name}</span>
+                          <span className="text-[7px] text-muted-foreground mt-0.5 max-w-[80px] text-center truncate">{name}</span>
                         </div>
-                        {idx < (activeRoute.key_intersections?.length ?? 0) - 1 && (
+                        {idx < (activeRoute?.key_intersections?.length ?? 0) - 1 && (
                           <div className="w-8 h-px bg-border flex-shrink-0" />
                         )}
                       </React.Fragment>
                     )
                   })}
                 </div>
-                {activeRoute.notes && (
+                {activeRoute?.notes && (
                   <p className="text-[10px] text-muted-foreground mt-2">{activeRoute.notes}</p>
                 )}
               </div>
@@ -1180,6 +1295,9 @@ export default function Page() {
           <div className="flex items-center gap-3">
             <span className="text-[9px] text-muted-foreground">
               {intersections.filter((i) => i.status === 'green').length} green / {intersections.filter((i) => i.status === 'red').length} red / {intersections.filter((i) => i.status === 'yellow').length} yellow
+            </span>
+            <span className="text-[9px] text-muted-foreground/40">
+              Bangalore | 18 junctions
             </span>
             <span className="text-[9px] text-muted-foreground/40">
               Agent: {AGENT_ID.slice(0, 8)}...
