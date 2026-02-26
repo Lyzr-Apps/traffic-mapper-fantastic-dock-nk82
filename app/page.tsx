@@ -530,26 +530,71 @@ export default function Page() {
   // ----- Load Leaflet via CDN -----
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (document.getElementById('leaflet-css')) {
-      if ((window as any).L) {
-        setLeafletLoaded(true)
-      }
+
+    // Already loaded
+    if ((window as any).L) {
+      setLeafletLoaded(true)
       return
     }
 
-    const link = document.createElement('link')
-    link.id = 'leaflet-css'
-    link.rel = 'stylesheet'
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-    document.head.appendChild(link)
+    const CDN_SOURCES = [
+      {
+        css: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+        js: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+      },
+      {
+        css: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css',
+        js: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js',
+      },
+      {
+        css: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css',
+        js: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+      },
+    ]
 
-    const script = document.createElement('script')
-    script.id = 'leaflet-js'
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-    script.onload = () => {
-      setLeafletLoaded(true)
+    let attempt = 0
+
+    function tryLoadLeaflet() {
+      if (attempt >= CDN_SOURCES.length) {
+        console.error('Failed to load Leaflet from all CDN sources')
+        return
+      }
+
+      const source = CDN_SOURCES[attempt]
+
+      // Remove previous attempts
+      document.getElementById('leaflet-css')?.remove()
+      document.getElementById('leaflet-js')?.remove()
+
+      // Load CSS first
+      const link = document.createElement('link')
+      link.id = 'leaflet-css'
+      link.rel = 'stylesheet'
+      link.href = source.css
+      link.crossOrigin = 'anonymous'
+      document.head.appendChild(link)
+
+      // Load JS after a small delay to let CSS start loading
+      const script = document.createElement('script')
+      script.id = 'leaflet-js'
+      script.src = source.js
+      script.crossOrigin = 'anonymous'
+      script.onload = () => {
+        if ((window as any).L) {
+          setLeafletLoaded(true)
+        } else {
+          attempt++
+          tryLoadLeaflet()
+        }
+      }
+      script.onerror = () => {
+        attempt++
+        tryLoadLeaflet()
+      }
+      document.body.appendChild(script)
     }
-    document.body.appendChild(script)
+
+    tryLoadLeaflet()
   }, [])
 
   // ----- Initialize Leaflet Map -----
@@ -559,26 +604,52 @@ export default function Page() {
     const L = (window as any).L
     if (!L) return
 
-    const map = L.map(mapContainerRef.current, {
+    // Ensure container has dimensions before initializing
+    const container = mapContainerRef.current
+    if (container.clientHeight === 0 || container.clientWidth === 0) {
+      // Retry after a frame if container not ready
+      const raf = requestAnimationFrame(() => {
+        setLeafletLoaded((v) => v) // trigger re-render
+      })
+      return () => cancelAnimationFrame(raf)
+    }
+
+    const map = L.map(container, {
       center: [12.9716, 77.5946],
       zoom: 13,
       zoomControl: false,
     })
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    // Try multiple tile sources for reliability
+    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 19,
-    }).addTo(map)
+      subdomains: 'abcd',
+    })
+    tileLayer.on('tileerror', () => {
+      // Fallback to standard OSM tiles if CartoDB fails
+      tileLayer.setUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
+    })
+    tileLayer.addTo(map)
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map)
 
     mapInstanceRef.current = map
+
+    // Force Leaflet to recalculate size after mount
+    setTimeout(() => {
+      map.invalidateSize()
+    }, 100)
+    setTimeout(() => {
+      map.invalidateSize()
+    }, 500)
 
     // Try geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           map.setView([pos.coords.latitude, pos.coords.longitude], 14)
+          setTimeout(() => map.invalidateSize(), 200)
           const userIcon = L.divIcon({
             html: '<div style="width:14px;height:14px;background:hsl(220,80%,55%);border:3px solid white;border-radius:50%;box-shadow:0 0 10px rgba(59,130,246,0.5);"></div>',
             className: '',
@@ -591,7 +662,7 @@ export default function Page() {
         () => {
           // Geolocation denied, stay on Bangalore center
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, timeout: 10000 }
       )
     }
 
@@ -616,7 +687,12 @@ export default function Page() {
       densityCirclesRef.current.push(circle)
     })
 
+    // Handle window resize
+    const handleResize = () => map.invalidateSize()
+    window.addEventListener('resize', handleResize)
+
     return () => {
+      window.removeEventListener('resize', handleResize)
       map.remove()
       mapInstanceRef.current = null
       markersRef.current = {}
@@ -719,6 +795,16 @@ export default function Page() {
       map.fitBounds(bounds, { padding: [60, 60] })
     }
   }, [displayRouteResults, activeRouteIdx, displayShowDrawer, intersections])
+
+  // ----- Invalidate map size when chat panel toggles -----
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (map) {
+      // Delay to let CSS transition finish
+      const t = setTimeout(() => map.invalidateSize(), 350)
+      return () => clearTimeout(t)
+    }
+  }, [chatOpen])
 
   // ----- Auto-scroll chat -----
   useEffect(() => {
@@ -1013,19 +1099,21 @@ export default function Page() {
 
           {/* ---------- MAP AREA (Real Leaflet Map) ---------- */}
           <div className="flex-1 relative overflow-hidden bg-background">
-            {/* Leaflet Map Container */}
+            {/* Leaflet Map Container - absolute positioning ensures it always has dimensions */}
             <div
               id="map-container"
               ref={mapContainerRef}
-              style={{ width: '100%', height: '100%', zIndex: 0 }}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}
             />
 
             {/* Loading overlay while Leaflet loads */}
             {!leafletLoaded && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-3">
+                  <FiActivity size={28} className="text-primary animate-pulse" />
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-muted-foreground">Loading map...</span>
+                  <span className="text-xs text-muted-foreground">Loading Bangalore map...</span>
+                  <span className="text-[10px] text-muted-foreground/60">Connecting to map tile servers</span>
                 </div>
               </div>
             )}

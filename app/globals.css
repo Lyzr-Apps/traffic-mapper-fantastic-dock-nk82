@@ -49,6 +49,17 @@
   }
 }
 
+/* Leaflet container MUST have explicit height */
+#map-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  background: hsl(220, 25%, 7%) !important;
+}
+
 /* Leaflet popup overrides for dark theme */
 .leaflet-popup-content-wrapper {
   background: hsl(220, 22%, 10%) !important;
